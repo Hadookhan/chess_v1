@@ -25,8 +25,14 @@ class Chess:
 
     def __init__(self, board=board):
         self.board = board
+        self.history = [self.copy_board()]
+
+    def copy_board(self):
+        return [row[:] for row in self.board]
 
     def __conv_move(self, pos):
+        if pos[0] not in self.pos_convert:
+            raise Exception("Invalid Move")
         col = self.pos_convert[pos[0].lower()]
         row = 8 - int(pos[1])
         return row, col
@@ -34,6 +40,8 @@ class Chess:
 
 
     def move(self, pos1, pos2):
+        self.history.append(self.copy_board())
+
         r1, c1 = self.__conv_move(pos1)
         r2, c2 = self.__conv_move(pos2)
 
@@ -143,7 +151,14 @@ class Chess:
         elif (target.islower() != piece.islower()):
             print(f"{pos1}{piece}x{pos2}{target}")
         return True
+    
+    def undo(self):
+        if len(self.history) > 1:
+            self.history.pop()  # remove current
+            self.board = self.copy_board_from(self.history[-1])
 
+    def copy_board_from(self, board_state):
+        return [row[:] for row in board_state]
 
 
     def show_board(self):
