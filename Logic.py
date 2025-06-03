@@ -53,7 +53,7 @@ class Chess:
 
         if piece.lower() == "p":
             direction = -1 if self.board[r1][c1].isupper() else 1
-            if c1 == c2 and target == ".":
+            if (c1 == c2 and target == "."):
                 if r2 == r1 + direction:
                     print(f"{pos1}{piece}{pos2}")
                     return True
@@ -62,50 +62,42 @@ class Chess:
                     print(f"{pos1}{piece}x{pos2}{target}")
                     return True
     
-        if piece.lower() == "n":
+        elif piece.lower() == "n":
             knight_moves = [
                 (2, 1), (1, 2), (-1, 2), (-2, 1),
                 (-2, -1), (-1, -2), (1, -2), (2, -1)
             ]
             for dr, dc in knight_moves:
-                if (r1 + dr == r2 and c1 + dc == c2) or self.__is_blocked(piece, target) == False:
-                    if target == ".":
-                        print(f"{pos1}{piece}{pos2}")
-                        return True
-                    elif (target.islower() != piece.islower()):
-                        print(f"{pos1}{piece}x{pos2}{target}")
-                        return True
+                if (r1 + dr == r2 and c1 + dc == c2) and self.__is_blocked(piece, target) == False:
+                    return self.__move_or_capture(pos1, pos2, piece, target)
+            return False
         
-        if piece.lower() == "r":
-            if (c1 == c2 or r1 == r2) or self.__is_blocked(piece, target) == False:
-                if self.__path_is_clear(piece, pos1, pos2):
-                    if target == ".":
-                        print(f"{pos1}{piece}{pos2}")
-                        return True
-                    elif (target.islower() != piece.islower()):
-                        print(f"{pos1}{piece}x{pos2}{target}")
-                        return True
+        elif piece.lower() == "r":
+            if self.__is_blocked(piece, target) and self.__path_is_clear(piece, pos1, pos2) == False:
+                return False
+            
+            return self.__move_or_capture(pos1, pos2, piece, target)
                     
-        if piece.lower() == "b":
-            if self.__is_blocked(piece, target) or self.__path_is_clear(piece, pos1, pos2) == False:
+        elif piece.lower() == "b":
+            if self.__is_blocked(piece, target) and self.__path_is_clear(piece, pos1, pos2) == False:
                 return False
             
             if abs(r1 - r2) != abs(c1 - c2):
                 return False
             
-            row_step = 1 if r2 > r1 else -1
-            col_step = 1 if c2 > c1 else -1
-
-            row, col = r1 + row_step, c1 + col_step
-            while row != r2 and col != c2:
-                if self.board[row][col] != ".":
-                    return False
-                row += row_step
-                col += col_step
-
-            return True
+            return self.__move_or_capture(pos1, pos2, piece, target)
+        
+        elif piece.lower() == "q":
+            if self.__is_blocked(piece, target) and self.__path_is_clear(piece, pos1, pos2) == False:
+                return False
+            
+            if abs(r1 - r2) != abs(c1 - c2):
+                return False
+            
+            return self.__move_or_capture(pos1, pos2, piece, target)
                 
-        return False
+        else:
+            return False
         
     def __is_blocked(self, piece, target) -> bool:
         if (piece.isupper() and target.isupper()) or (piece.islower() and target.islower()):
@@ -117,7 +109,7 @@ class Chess:
         r1, c1 = self.__conv_move(pos1)
         r2, c2 = self.__conv_move(pos2)
 
-        if piece.lower() == "r":
+        if piece.lower() == "r" or piece.lower() == "q":
             # Horizontal movement
             if r1 == r2:
                 step = 1 if c2 > c1 else -1
@@ -131,13 +123,25 @@ class Chess:
                 for row in range(r1 + step, r2, step):
                     if self.board[row][c1] != ".":
                         return False
-
-            else:
-                return False  # not a straight line — rook can't go there
         
-        if piece.lower() == "b":
-            pass
+        if piece.lower() == "b" or piece.lower() == "q":
+            row_step = 1 if r2 > r1 else -1
+            col_step = 1 if c2 > c1 else -1
 
+            row, col = r1 + row_step, c1 + col_step
+            while row != r2 and col != c2:
+                if self.board[row][col] != ".":
+                    return False
+                row += row_step
+                col += col_step
+
+        return True
+    
+    def __move_or_capture(self, pos1, pos2, piece, target):
+        if target == ".":
+            print(f"{pos1}{piece}{pos2}")
+        elif (target.islower() != piece.islower()):
+            print(f"{pos1}{piece}x{pos2}{target}")
         return True
 
 
