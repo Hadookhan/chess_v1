@@ -9,6 +9,12 @@ board = [
     ["R","N","B","Q","K","B","N","R"]
 ]
 
+class Node:
+    def __init__(self, next, prev, val=None):
+        self.next = next
+        self.prev = prev
+        self.val = val
+
 class Chess:
 
     pos_convert = {
@@ -25,9 +31,9 @@ class Chess:
 
     def __init__(self, board=board):
         self.board = board
-        self.history = [self.copy_board()]
+        self.history = [self.__copy_board()]
 
-    def copy_board(self):
+    def __copy_board(self):
         return [row[:] for row in self.board]
 
     def __conv_move(self, pos):
@@ -40,7 +46,7 @@ class Chess:
 
 
     def move(self, pos1, pos2):
-        self.history.append(self.copy_board())
+        self.history.append(self.__copy_board())
 
         r1, c1 = self.__conv_move(pos1)
         r2, c2 = self.__conv_move(pos2)
@@ -63,11 +69,11 @@ class Chess:
             direction = -1 if self.board[r1][c1].isupper() else 1
             if (c1 == c2 and target == "."):
                 if r2 == r1 + direction:
-                    print(f"{pos1}{piece}{pos2}")
+                    print(f"{pos2}")
                     return True
-            elif c1 == c2 + 1 or c1 == c2 - 1 and target.islower() != piece.islower():
+            elif (c1 == c2 + 1 or c1 == c2 - 1) and target.islower() != piece.islower():
                 if r2 == r1 + direction:
-                    print(f"{pos1}{piece}x{pos2}{target}")
+                    print(f"{pos1[0]}x{pos2}")
                     return True
     
         elif piece.lower() == "n":
@@ -81,28 +87,33 @@ class Chess:
             return False
         
         elif piece.lower() == "r":
-            if self.__is_blocked(piece, target) and self.__path_is_clear(piece, pos1, pos2) == False:
+            if self.__is_blocked(piece, target) or self.__path_is_clear(piece, pos1, pos2) == False:
                 return False
             
             return self.__move_or_capture(pos1, pos2, piece, target)
                     
         elif piece.lower() == "b":
-            if self.__is_blocked(piece, target) and self.__path_is_clear(piece, pos1, pos2) == False:
-                return False
-            
-            if abs(r1 - r2) != abs(c1 - c2):
+            if self.__is_blocked(piece, target) or self.__path_is_clear(piece, pos1, pos2) == False:
                 return False
             
             return self.__move_or_capture(pos1, pos2, piece, target)
         
         elif piece.lower() == "q":
-            if self.__is_blocked(piece, target) and self.__path_is_clear(piece, pos1, pos2) == False:
-                return False
-            
-            if abs(r1 - r2) != abs(c1 - c2):
+            if self.__is_blocked(piece, target) or self.__path_is_clear(piece, pos1, pos2) == False:
                 return False
             
             return self.__move_or_capture(pos1, pos2, piece, target)
+        
+        elif piece.lower() == "k":
+            king_moves = [
+                (1,0), (0,1), (1,1), (1,-1),
+                (-1,0), (0,-1), (-1,-1), (-1,1)
+            ]
+
+            for dr, dc in king_moves:
+                if (r1 + dr == r2 and c1 + dc == c2) and self.__is_blocked(piece, target) == False:
+                    return self.__move_or_capture(pos1, pos2, piece, target)
+            return False
                 
         else:
             return False
@@ -117,13 +128,14 @@ class Chess:
         r1, c1 = self.__conv_move(pos1)
         r2, c2 = self.__conv_move(pos2)
 
-        if piece.lower() == "r" or piece.lower() == "q":
+        if piece.lower() == "r":
             # Horizontal movement
             if r1 == r2:
                 step = 1 if c2 > c1 else -1
                 for col in range(c1 + step, c2, step):
                     if self.board[r1][col] != ".":
                         return False
+                return True
 
             # Vertical movement
             elif c1 == c2:
@@ -131,34 +143,47 @@ class Chess:
                 for row in range(r1 + step, r2, step):
                     if self.board[row][c1] != ".":
                         return False
+                return True
+            return False
         
-        if piece.lower() == "b" or piece.lower() == "q":
+        if piece.lower() == "b":
+            if abs(r1 - r2) != abs(c1 - c2):
+                return False
+            
             row_step = 1 if r2 > r1 else -1
             col_step = 1 if c2 > c1 else -1
-
             row, col = r1 + row_step, c1 + col_step
+
             while row != r2 and col != c2:
                 if self.board[row][col] != ".":
                     return False
                 row += row_step
                 col += col_step
+            return True
 
-        return True
+        if piece.lower() == "q":
+            if r1==r2 or c1==c2:
+                return self.__path_is_clear("r",pos1,pos2)
+            elif abs(r1 - r2) == abs(c1 - c2):
+                return self.__path_is_clear("b", pos1, pos2)
+            else:
+                return False
+        return False
     
     def __move_or_capture(self, pos1, pos2, piece, target):
         if target == ".":
-            print(f"{pos1}{piece}{pos2}")
+            print(f"\nMove: {piece.upper()}{pos1[0]}{pos2}")
+            return True
         elif (target.islower() != piece.islower()):
-            print(f"{pos1}{piece}x{pos2}{target}")
-        return True
+            print(f"\nMove: {piece.upper()}{pos1[0]}x{pos2}")
+            return True
+        return False
     
     def undo(self):
         if len(self.history) > 1:
-            self.history.pop()  # remove current
-            self.board = self.copy_board_from(self.history[-1])
+            prev_move = self.history.pop()  # remove current
+            self.board = prev_move
 
-    def copy_board_from(self, board_state):
-        return [row[:] for row in board_state]
 
 
     def show_board(self):
