@@ -10,10 +10,11 @@ board = [
 ]
 
 class Node:
-    def __init__(self, val, next=None, prev=None):
+    def __init__(self, val, move, next=None, prev=None):
+        self.val = val
+        self.move = move
         self.next = next
         self.prev = prev
-        self.val = val
 
 class Chess:
 
@@ -32,7 +33,7 @@ class Chess:
     def __init__(self, board=board):
         self.board = board
         self.history = [self.__copy_board()]
-        self.head, self.tail = Node(-1), Node(-1)
+        self.head, self.tail = Node(-1, -1), Node(-1, -1)
         self.head.next, self.tail.prev = self.tail, self.head
         self.move_validators = {
             "p": self.__valid_pawn,
@@ -62,12 +63,14 @@ class Chess:
             self.board[r1][c1] = "."
             self.board[r2][c2] = piece
             self.history.append(self.__copy_board())
-            new_move = Node((pos1,pos2))
-            prev = self.tail.prev
-            prev.next = self.tail.prev = new_move
-            new_move.next, new_move.prev = self.tail, prev
         else:
             print("\nINVALID MOVE\n")
+
+    def __update_move(self, val, move):
+        new_move = Node(val, move)
+        prev = self.tail.prev
+        prev.next = self.tail.prev = new_move
+        new_move.next, new_move.prev = self.tail, prev
 
     def __is_valid(self, pos1, pos2) -> bool:
         r1, c1 = self.__conv_move(pos1)
@@ -89,23 +92,20 @@ class Chess:
         return False
     
     def __valid_pawn(self, pos1, pos2, piece, target, r1, c1, r2, c2) -> bool:
-        square = self.__to_algebraic(r1, c1)
-        print(f"{square} | {piece}")
-
         direction = -1 if piece.isupper() else 1  # standard 1-step move
         start_row = 6 if piece.isupper() else 1
 
         # Single forward move
         if c1 == c2 and target == ".":
             if r2 == r1 + direction:
-                return True
+                return self.__move_or_capture(pos1, pos2, piece, target)
             # Double forward from starting row
             if r1 == start_row and r2 == r1 + 2 * direction and self.board[r1 + direction][c1] == ".":
-                return True
+                return self.__move_or_capture(pos1, pos2, piece, target)
 
         # Diagonal capture
         if abs(c1 - c2) == 1 and r2 == r1 + direction and target != "." and target.islower() != piece.islower():
-            return True
+            return self.__move_or_capture(pos1, pos2, piece, target)
         return False
     
     def __to_algebraic(self, row, col) -> str:
@@ -135,7 +135,11 @@ class Chess:
         ]
 
         for dr, dc in king_moves:
-            if (r1 + dr == r2 and c1 + dc == c2) and self.__is_blocked(piece, target) == False:
+            if self.__short_castle(pos1, pos2, piece, target):
+                return self.__move_or_capture(pos1, pos2, piece, target, castle_s=True)
+            elif self.__long_castle(pos1, pos2, piece, target):
+                return self.__move_or_capture(pos1, pos2, piece, target, castle_l=True)
+            elif (r1 + dr == r2 and c1 + dc == c2) and self.__is_blocked(piece, target) == False:
                 return self.__move_or_capture(pos1, pos2, piece, target)
         return False
 
@@ -191,12 +195,94 @@ class Chess:
                 return False
         return False
     
-    def __move_or_capture(self, pos1, pos2, piece, target) -> bool:
+    def __can_castle(self, square: str) -> bool:
+        return not self.__has_moved(square)
+    
+    def __short_castle(self, pos1, pos2, piece, target):
+        # Only allow king move from e1 to g1 or e8 to g8
+        if piece.lower() != "k" or target != ".":
+            return False
+
+        if piece.isupper():  # White
+            if pos1 != "e1" or pos2 != "g1":
+                return False
+            if not self.__can_castle("e1") or not self.__can_castle("h1"):  # King and rook
+                return False
+            if self.__path_is_clear(piece, pos1, pos2):
+                return False
+            # NOTE: Add king safety checks here
+            self.board[7][7] = "."
+            self.board[7][5] = "r"
+            return True
+
+        else:  # Black
+            if pos1 != "e8" or pos2 != "g8":
+                return False
+            if not self.__can_castle("e8") or not self.__can_castle("h8"):
+                return False
+            if self.__path_is_clear(piece, pos1, pos2):
+                return False
+            self.board[0][7] = "."
+            self.board[0][5] = "r"
+            return True
+        
+    def __long_castle(self, pos1, pos2, piece, target):
+        # Only allow king move from e1 to g1 or e8 to g8
+        if piece.lower() != "k" or target != ".":
+            return False
+
+        if piece.isupper():  # White
+            if pos1 != "e1" or pos2 != "c1":
+                return False
+            if not self.__can_castle("e1") or not self.__can_castle("a1"):  # King and rook
+                return False
+            if self.__path_is_clear(piece, pos1, pos2):
+                return False
+            # NOTE: Add king safety checks here
+            self.board[7][0] = "."
+            self.board[7][3] = "R"
+            return True
+
+        else:  # Black
+            if pos1 != "e8" or pos2 != "c8":
+                return False
+            if not self.__can_castle("e8") or not self.__can_castle("a8"):
+                return False
+            if self.__path_is_clear(piece, pos1, pos2):
+                return False
+            self.board[0][0] = "."
+            self.board[0][3] = "r"
+            return True
+
+    
+    def __move_or_capture(self, pos1, pos2, piece, target, castle_s=False, castle_l=False) -> bool:
+        r1, c1 = self.__conv_move(pos1)
+        r2, c2 = self.__conv_move(pos2)
+        square = self.__to_algebraic(r1, c1)
+
         if target == ".":
+            if piece.lower() == "p":
+                print(target)
+                self.__update_move((pos1, pos2), pos2)
+                return True
+            if castle_s == True:
+                print("\nMove: O-O")
+                self.__update_move((pos1, pos2), "O-O")
+                return True
+            if castle_l == True:
+                print("\nMove: O-O-O")
+                self.__update_move((pos1, pos2), "O-O-O")
+                return True
             print(f"\nMove: {piece.upper()}{pos1[0]}{pos2}")
+            self.__update_move((pos1, pos2), f"{piece.upper()}{pos1[0]}{pos2}")
             return True
         elif (target.islower() != piece.islower()):
+            if piece.lower() == "p":
+                print(f"{square}x{pos2}")
+                self.__update_move((pos1, pos2), f"{square}x{pos2}") if self.board[r2][c2][0].lower() == "p" else self.__update_move((pos1, pos2), f"{square}x{target.upper()}{pos2[0]}")
+                return True
             print(f"\nMove: {piece.upper()}{pos1[0]}x{pos2}")
+            self.__update_move((pos1, pos2), f"{piece.upper()}{pos1[0]}x{pos2}")
             return True
         return False
     
@@ -224,7 +310,7 @@ class Chess:
         queue = []
 
         while cur != self.tail:
-            queue.append(cur.val)
+            queue.append(cur.move)
             cur = cur.next
         
         for i in range(1, len(queue), 2):

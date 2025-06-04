@@ -14,6 +14,7 @@ def main():
             else:
                 pos2 = input("pos2: ")
                 game.move(pos1, pos2)
+                game.show_moves()
         return game
     
     return run_game()
@@ -27,5 +28,3 @@ if __name__ == "__main__":
         print(" ".join(row))
 
     save.show_moves()
-
-    
