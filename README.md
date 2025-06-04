@@ -5,5 +5,6 @@ My personal recreation of Chess
 
 - Uses Chess Notation commands to move pieces
 - Applies standard Chess rules
+- Uses Stockfish for evaluation
 
 ## CURRENT WORK IN PROGRESS
