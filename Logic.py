@@ -274,11 +274,11 @@ class Chess:
                 print(target)
                 self.__update_move((pos1, pos2), pos2)
                 return True
-            if castle_s == True:
+            if castle_s:
                 print("\nMove: O-O")
                 self.__update_move((pos1, pos2), "O-O")
                 return True
-            if castle_l == True:
+            if castle_l:
                 print("\nMove: O-O-O")
                 self.__update_move((pos1, pos2), "O-O-O")
                 return True

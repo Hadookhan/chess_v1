@@ -1,6 +1,7 @@
 import chess.engine
 from Logic import board, Chess
 import chess
+from get_platform import get_stockfish_binary
 
 
 def run_game(board=board):
@@ -11,12 +12,13 @@ def run_game(board=board):
         board_fen = game.custom_board_to_fen(board)
         chess_board = chess.Board(board_fen)
 
-        engine = chess.engine.SimpleEngine.popen_uci("./stockfish/stockfish-ubuntu-x86-64-avx2")
+        engine = chess.engine.SimpleEngine.popen_uci(get_stockfish_binary())
+
 
         info = engine.analyse(chess_board, chess.engine.Limit(time=0.1))
 
         score = info["score"].white().score(mate_score=10000)
-        print(f"Evaluation ({'white' if game.white_to_move == True else 'black'}):", score)
+        print(f"Evaluation ({'white' if game.white_to_move else 'black'}):", score)
 
         result = engine.play(chess_board, chess.engine.Limit(time=0.1))
         print("Best move:", result.move)
