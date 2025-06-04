@@ -10,7 +10,7 @@ board = [
 ]
 
 class Node:
-    def __init__(self, next, prev, val=None):
+    def __init__(self, val, next=None, prev=None):
         self.next = next
         self.prev = prev
         self.val = val
@@ -32,22 +32,28 @@ class Chess:
     def __init__(self, board=board):
         self.board = board
         self.history = [self.__copy_board()]
+        self.head, self.tail = Node(-1), Node(-1)
+        self.head.next, self.tail.prev = self.tail, self.head
+        self.move_validators = {
+            "p": self.__valid_pawn,
+            "n": self.__valid_knight,
+            "r": self.__valid_rook_bishop_queen,
+            "b": self.__valid_rook_bishop_queen,
+            "q": self.__valid_rook_bishop_queen,
+            "k": self.__valid_king
+        }
 
-    def __copy_board(self):
+    def __copy_board(self) -> list:
         return [row[:] for row in self.board]
 
-    def __conv_move(self, pos):
-        if pos[0] not in self.pos_convert:
-            raise Exception("Invalid Move")
+    def __conv_move(self, pos) -> tuple:
+        if len(pos) != 2 or pos[0].lower() not in self.pos_convert or not pos[1].isdigit():
+            raise ValueError(f"Invalid position format: {pos}")
         col = self.pos_convert[pos[0].lower()]
         row = 8 - int(pos[1])
         return row, col
 
-
-
-    def move(self, pos1, pos2):
-        self.history.append(self.__copy_board())
-
+    def move(self, pos1, pos2) -> None:
         r1, c1 = self.__conv_move(pos1)
         r2, c2 = self.__conv_move(pos2)
 
@@ -55,9 +61,13 @@ class Chess:
         if self.__is_valid(pos1, pos2):
             self.board[r1][c1] = "."
             self.board[r2][c2] = piece
+            self.history.append(self.__copy_board())
+            new_move = Node((pos1,pos2))
+            prev = self.tail.prev
+            prev.next = self.tail.prev = new_move
+            new_move.next, new_move.prev = self.tail, prev
         else:
             print("\nINVALID MOVE\n")
-
 
     def __is_valid(self, pos1, pos2) -> bool:
         r1, c1 = self.__conv_move(pos1)
@@ -65,59 +75,70 @@ class Chess:
         piece = self.board[r1][c1]
         target = self.board[r2][c2]
 
-        if piece.lower() == "p":
-            direction = -1 if self.board[r1][c1].isupper() else 1
-            if (c1 == c2 and target == "."):
-                if r2 == r1 + direction:
-                    print(f"{pos2}")
-                    return True
-            elif (c1 == c2 + 1 or c1 == c2 - 1) and target.islower() != piece.islower():
-                if r2 == r1 + direction:
-                    print(f"{pos1[0]}x{pos2}")
-                    return True
+        validator = self.move_validators.get(piece.lower())
+        if validator:
+            return validator(pos1, pos2, piece, target, r1, c1, r2, c2) if validator != self.__valid_rook_bishop_queen else validator(pos1, pos2, piece, target)
+
+        return False
+        
+    def __has_moved(self, square) -> bool:
+        print(self.get_moves())
+        for move in self.get_moves():
+            if move[0] == square:  # piece moved from this square
+                return True
+        return False
     
-        elif piece.lower() == "n":
-            knight_moves = [
+    def __valid_pawn(self, pos1, pos2, piece, target, r1, c1, r2, c2) -> bool:
+        square = self.__to_algebraic(r1, c1)
+        print(f"{square} | {piece}")
+
+        direction = -1 if piece.isupper() else 1  # standard 1-step move
+        start_row = 6 if piece.isupper() else 1
+
+        # Single forward move
+        if c1 == c2 and target == ".":
+            if r2 == r1 + direction:
+                return True
+            # Double forward from starting row
+            if r1 == start_row and r2 == r1 + 2 * direction and self.board[r1 + direction][c1] == ".":
+                return True
+
+        # Diagonal capture
+        if abs(c1 - c2) == 1 and r2 == r1 + direction and target != "." and target.islower() != piece.islower():
+            return True
+        return False
+    
+    def __to_algebraic(self, row, col) -> str:
+        files = list(self.pos_convert.keys())
+        return f"{files[col]}{8 - row}"
+    
+    def __valid_knight(self, pos1, pos2, piece, target, r1, c1, r2, c2) -> bool:
+        knight_moves = [
                 (2, 1), (1, 2), (-1, 2), (-2, 1),
                 (-2, -1), (-1, -2), (1, -2), (2, -1)
             ]
-            for dr, dc in knight_moves:
-                if (r1 + dr == r2 and c1 + dc == c2) and self.__is_blocked(piece, target) == False:
-                    return self.__move_or_capture(pos1, pos2, piece, target)
-            return False
+        for dr, dc in knight_moves:
+            if (r1 + dr == r2 and c1 + dc == c2) and self.__is_blocked(piece, target) == False:
+                return self.__move_or_capture(pos1, pos2, piece, target)
+        return False
         
-        elif piece.lower() == "r":
-            if self.__is_blocked(piece, target) or self.__path_is_clear(piece, pos1, pos2) == False:
+    def __valid_rook_bishop_queen(self, pos1, pos2, piece, target) -> bool:
+        if self.__is_blocked(piece, target) or self.__path_is_clear(piece, pos1, pos2) == False:
                 return False
             
-            return self.__move_or_capture(pos1, pos2, piece, target)
-                    
-        elif piece.lower() == "b":
-            if self.__is_blocked(piece, target) or self.__path_is_clear(piece, pos1, pos2) == False:
-                return False
-            
-            return self.__move_or_capture(pos1, pos2, piece, target)
-        
-        elif piece.lower() == "q":
-            if self.__is_blocked(piece, target) or self.__path_is_clear(piece, pos1, pos2) == False:
-                return False
-            
-            return self.__move_or_capture(pos1, pos2, piece, target)
-        
-        elif piece.lower() == "k":
-            king_moves = [
-                (1,0), (0,1), (1,1), (1,-1),
-                (-1,0), (0,-1), (-1,-1), (-1,1)
-            ]
+        return self.__move_or_capture(pos1, pos2, piece, target)
+    
+    def __valid_king(self, pos1, pos2, piece, target, r1, c1, r2, c2) -> bool:
+        king_moves = [
+            (1,0), (0,1), (1,1), (1,-1),
+            (-1,0), (0,-1), (-1,-1), (-1,1)
+        ]
 
-            for dr, dc in king_moves:
-                if (r1 + dr == r2 and c1 + dc == c2) and self.__is_blocked(piece, target) == False:
-                    return self.__move_or_capture(pos1, pos2, piece, target)
-            return False
-                
-        else:
-            return False
-        
+        for dr, dc in king_moves:
+            if (r1 + dr == r2 and c1 + dc == c2) and self.__is_blocked(piece, target) == False:
+                return self.__move_or_capture(pos1, pos2, piece, target)
+        return False
+
     def __is_blocked(self, piece, target) -> bool:
         if (piece.isupper() and target.isupper()) or (piece.islower() and target.islower()):
             return True
@@ -170,7 +191,7 @@ class Chess:
                 return False
         return False
     
-    def __move_or_capture(self, pos1, pos2, piece, target):
+    def __move_or_capture(self, pos1, pos2, piece, target) -> bool:
         if target == ".":
             print(f"\nMove: {piece.upper()}{pos1[0]}{pos2}")
             return True
@@ -179,14 +200,16 @@ class Chess:
             return True
         return False
     
-    def undo(self):
+    def undo(self) -> None:
         if len(self.history) > 1:
             prev_move = self.history.pop()  # remove current
             self.board = prev_move
 
+        if self.tail.prev != self.head:
+            self.tail.prev = self.tail.prev.prev
+            self.tail.prev.next = self.tail
 
-
-    def show_board(self):
+    def show_board(self) -> None:
         print("  a b c d e f g h")
         print(" +----------------")
         for i, row in enumerate(self.board):
@@ -194,3 +217,26 @@ class Chess:
             row_str = f"{rank}|{' '.join(row)}"
             print(row_str)
         print()
+
+    def show_moves(self) -> None:
+        cur = self.head.next
+        n = 1
+        queue = []
+
+        while cur != self.tail:
+            queue.append(cur.val)
+            cur = cur.next
+        
+        for i in range(1, len(queue), 2):
+            print(f"{n} | {queue[i-1]} {queue[i]}")
+            n+=1
+    
+    def get_moves(self) -> list:
+        cur = self.head.next
+        queue = []
+
+        while cur != self.tail:
+            queue.append(list(cur.val))
+            cur = cur.next
+        
+        return queue
