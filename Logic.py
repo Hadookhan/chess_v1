@@ -193,6 +193,14 @@ class Chess:
                 return self.__path_is_clear("b", pos1, pos2)
             else:
                 return False
+            
+        if piece.lower() == "k":
+            if r1==r2:
+                step = 1 if c2 > c1 else -1
+                for col in range(c1 + step, c2, step):
+                    if self.board[r1][col] != ".":
+                        return False
+                return True
         return False
     
     def __can_castle(self, square: str) -> bool:
@@ -208,11 +216,11 @@ class Chess:
                 return False
             if not self.__can_castle("e1") or not self.__can_castle("h1"):  # King and rook
                 return False
-            if self.__path_is_clear(piece, pos1, pos2):
+            if not self.__path_is_clear(piece, pos1, pos2):
                 return False
             # NOTE: Add king safety checks here
             self.board[7][7] = "."
-            self.board[7][5] = "r"
+            self.board[7][5] = "R"
             return True
 
         else:  # Black
@@ -220,7 +228,7 @@ class Chess:
                 return False
             if not self.__can_castle("e8") or not self.__can_castle("h8"):
                 return False
-            if self.__path_is_clear(piece, pos1, pos2):
+            if not self.__path_is_clear(piece, pos1, pos2):
                 return False
             self.board[0][7] = "."
             self.board[0][5] = "r"
@@ -236,7 +244,7 @@ class Chess:
                 return False
             if not self.__can_castle("e1") or not self.__can_castle("a1"):  # King and rook
                 return False
-            if self.__path_is_clear(piece, pos1, pos2):
+            if not self.__path_is_clear(piece, pos1, pos2):
                 return False
             # NOTE: Add king safety checks here
             self.board[7][0] = "."
@@ -248,7 +256,7 @@ class Chess:
                 return False
             if not self.__can_castle("e8") or not self.__can_castle("a8"):
                 return False
-            if self.__path_is_clear(piece, pos1, pos2):
+            if not self.__path_is_clear(piece, pos1, pos2):
                 return False
             self.board[0][0] = "."
             self.board[0][3] = "r"
