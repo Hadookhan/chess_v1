@@ -1,22 +1,7 @@
 from Logic import Chess
+from Engine import run_game
 
 def main():
-    def run_game():
-        game = Chess()
-        
-        while True:
-            game.show_board()
-            pos1 = input("pos1: ")
-            if pos1 == "0":
-                break
-            elif pos1 == "-1":
-                game.undo()
-            else:
-                pos2 = input("pos2: ")
-                game.move(pos1, pos2)
-                game.show_moves()
-        return game
-    
     return run_game()
     
 

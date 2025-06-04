@@ -1,3 +1,4 @@
+
 board = [
     ["r","n","b","q","k","b","n","r"],
     ["p","p","p","p","p","p","p","p"],
@@ -27,12 +28,11 @@ class Chess:
         'f' : 5,
         'g' : 6,
         'h' : 7
-
     }
 
-    def __init__(self, board=board):
+    def __init__(self, board=board, white_to_move=True):
         self.board = board
-        self.history = [self.__copy_board()]
+        self.history = [self.copy_board()]
         self.head, self.tail = Node(-1, -1), Node(-1, -1)
         self.head.next, self.tail.prev = self.tail, self.head
         self.move_validators = {
@@ -43,8 +43,10 @@ class Chess:
             "q": self.__valid_rook_bishop_queen,
             "k": self.__valid_king
         }
+        self.white_to_move = white_to_move
+        self.en_passant_target = "-"
 
-    def __copy_board(self) -> list:
+    def copy_board(self) -> list[list[str]]:
         return [row[:] for row in self.board]
 
     def __conv_move(self, pos) -> tuple:
@@ -59,10 +61,12 @@ class Chess:
         r2, c2 = self.__conv_move(pos2)
 
         piece = self.board[r1][c1]
-        if self.__is_valid(pos1, pos2):
+        if self.is_valid(pos1, pos2):
             self.board[r1][c1] = "."
             self.board[r2][c2] = piece
-            self.history.append(self.__copy_board())
+            self.history.append(self.copy_board())
+
+            self.white_to_move = not self.white_to_move
         else:
             print("\nINVALID MOVE\n")
 
@@ -72,7 +76,7 @@ class Chess:
         prev.next = self.tail.prev = new_move
         new_move.next, new_move.prev = self.tail, prev
 
-    def __is_valid(self, pos1, pos2) -> bool:
+    def is_valid(self, pos1, pos2) -> bool:
         r1, c1 = self.__conv_move(pos1)
         r2, c2 = self.__conv_move(pos2)
         piece = self.board[r1][c1]
@@ -85,7 +89,6 @@ class Chess:
         return False
         
     def __has_moved(self, square) -> bool:
-        print(self.get_moves())
         for move in self.get_moves():
             if move[0] == square:  # piece moved from this square
                 return True
@@ -108,7 +111,7 @@ class Chess:
             return self.__move_or_capture(pos1, pos2, piece, target)
         return False
     
-    def __to_algebraic(self, row, col) -> str:
+    def to_algebraic(self, row, col) -> str:
         files = list(self.pos_convert.keys())
         return f"{files[col]}{8 - row}"
     
@@ -207,14 +210,13 @@ class Chess:
         return not self.__has_moved(square)
     
     def __short_castle(self, pos1, pos2, piece, target):
-        # Only allow king move from e1 to g1 or e8 to g8
         if piece.lower() != "k" or target != ".":
             return False
 
         if piece.isupper():  # White
             if pos1 != "e1" or pos2 != "g1":
                 return False
-            if not self.__can_castle("e1") or not self.__can_castle("h1"):  # King and rook
+            if not self.__can_castle("e1") or not self.__can_castle("h1"):
                 return False
             if not self.__path_is_clear(piece, pos1, pos2):
                 return False
@@ -235,14 +237,13 @@ class Chess:
             return True
         
     def __long_castle(self, pos1, pos2, piece, target):
-        # Only allow king move from e1 to g1 or e8 to g8
         if piece.lower() != "k" or target != ".":
             return False
 
         if piece.isupper():  # White
             if pos1 != "e1" or pos2 != "c1":
                 return False
-            if not self.__can_castle("e1") or not self.__can_castle("a1"):  # King and rook
+            if not self.__can_castle("e1") or not self.__can_castle("a1"):
                 return False
             if not self.__path_is_clear(piece, pos1, pos2):
                 return False
@@ -266,7 +267,7 @@ class Chess:
     def __move_or_capture(self, pos1, pos2, piece, target, castle_s=False, castle_l=False) -> bool:
         r1, c1 = self.__conv_move(pos1)
         r2, c2 = self.__conv_move(pos2)
-        square = self.__to_algebraic(r1, c1)
+        square = self.to_algebraic(r1, c1)
 
         if target == ".":
             if piece.lower() == "p":
@@ -334,3 +335,72 @@ class Chess:
             cur = cur.next
         
         return queue
+    
+    def __get_castling_rights(self) -> str:
+        rights = ""
+
+        # Check white
+        if not self.__has_moved("e1"):
+            if not self.__has_moved("h1"):
+                rights += "K"
+            if not self.__has_moved("a1"):
+                rights += "Q"
+
+        # Check black
+        if not self.__has_moved("e8"):
+            if not self.__has_moved("h8"):
+                rights += "k"
+            if not self.__has_moved("a8"):
+                rights += "q"
+
+        return rights if rights else "-"
+
+
+    def to_fen(self) -> str:
+        fen_rows = []
+
+        for row in self.board:
+            fen_row = ""
+            empty_count = 0
+            for square in row:
+                if square == ".":
+                    empty_count += 1
+                else:
+                    if empty_count > 0:
+                        fen_row += str(empty_count)
+                        empty_count = 0
+                    fen_row += square
+            if empty_count > 0:
+                fen_row += str(empty_count)
+            fen_rows.append(fen_row)
+
+        piece_placement = "/".join(fen_rows)
+        side_to_move = "w"  if self.white_to_move else "b"
+        castling_rights = self.__get_castling_rights()
+        en_passant = self.en_passant_target
+        halfmove_clock = "0"
+        fullmove_number = "1"
+
+        return f"{piece_placement} {side_to_move} {castling_rights} {en_passant} {halfmove_clock} {fullmove_number}"
+
+    def custom_board_to_fen(self, board, white_to_move=True):
+        white_to_move = self.white_to_move
+        fen_rows = []
+        for row in board:
+            empty = 0
+            fen_row = ""
+            for piece in row:
+                if piece == ".":
+                    empty += 1
+                else:
+                    if empty > 0:
+                        fen_row += str(empty)
+                        empty = 0
+                    fen_row += piece
+            if empty > 0:
+                fen_row += str(empty)
+            fen_rows.append(fen_row)
+        board_part = "/".join(fen_rows)
+        turn_part = "w" if white_to_move else "b"
+        return f"{board_part} {turn_part} - - 0 1"
+
