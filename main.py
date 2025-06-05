@@ -1,5 +1,4 @@
-from Logic import Chess
-from Engine import run_game
+from backend.engine.Engine import run_game
 
 def main():
     return run_game()
