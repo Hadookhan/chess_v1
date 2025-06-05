@@ -25,11 +25,13 @@ def run_game(board=board):
 
         engine.quit()
 
+        return list(str(result.move))
+
     while True:
         game.show_board()
         if engine_on.upper() == "Y":
-            run_engine()
-        pos1 = input("pos1: ")
+            move = run_engine()
+        pos1 = input(f"pos1: ")
         if pos1 == "0":
             break
         elif pos1 == "-1":
