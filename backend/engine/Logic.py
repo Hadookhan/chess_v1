@@ -56,12 +56,12 @@ class Chess:
         row = 8 - int(pos[1])
         return row, col
 
-    def move(self, pos1, pos2) -> None:
+    def move(self, pos1, pos2) -> bool:
         r1, c1 = self.__conv_move(pos1)
         r2, c2 = self.__conv_move(pos2)
         if self.board[r1][c1].isupper() != self.white_to_move:
             print(f"\nINVALID MOVE: {'Whites move' if self.white_to_move else 'Blacks move'}\n")
-            return
+            return False
 
         piece = self.board[r1][c1]
         if self.is_valid(pos1, pos2):
@@ -72,8 +72,10 @@ class Chess:
             self.board[r1][c1] = "."
             self.board[r2][c2] = piece
             print(f"{'Whites Turn' if self.white_to_move else 'Blacks Turn'}")
+            return True
         else:
             print("\nINVALID MOVE\n")
+            return False
 
     def __update_move(self, val, move, board):
         new_move = Node(val, move, board)
@@ -86,20 +88,6 @@ class Chess:
         r2, c2 = self.__conv_move(pos2)
         piece = self.board[r1][c1]
         target = self.board[r2][c2]
-
-        # original_from = self.board[r1][c1]
-        # original_to = self.board[r2][c2]
-
-        # self.board[r1][c1] = "."
-        # self.board[r2][c2] = piece
-        # in_check = self.__in_check(piece.isupper())
-        # print(in_check)
-
-        # if in_check:
-        #     self.board[r1][c1] = original_from
-        #     self.board[r2][c2] = original_to
-        #     print("Illegal move: King is in check")
-        #     return False
 
         validator = self.move_validators.get(piece.lower())
         if validator:
@@ -314,12 +302,17 @@ class Chess:
     def __move_or_capture(self, pos1, pos2, piece, target, castle_s=False, castle_l=False) -> bool:
         r1, c1 = self.__conv_move(pos1)
         r2, c2 = self.__conv_move(pos2)
+        print(r2, c2)
         square = self.to_algebraic(r1, c1)
 
         if target == ".":
             if piece.lower() == "p":
-                print(target)
-                self.__update_move((pos1, pos2), pos2, self.copy_board())
+                if self.__pawn_promote(piece, r2, c2):
+                    print(f"{square}={self.board[r2][c2].upper()}")
+                    self.__update_move((pos1, pos2), f"{square}={self.board[r2][c2].upper()}", self.copy_board())
+                else:
+                    print(target)
+                    self.__update_move((pos1, pos2), pos2, self.copy_board())
                 return True
             if castle_s:
                 print("\nMove: O-O")
@@ -334,8 +327,12 @@ class Chess:
             return True
         elif (target.islower() != piece.islower()):
             if piece.lower() == "p":
-                print(f"{square}x{pos2}")
-                self.__update_move((pos1, pos2), f"{square}x{pos2}", self.copy_board()) if self.board[r2][c2][0].lower() == "p" else self.__update_move((pos1, pos2), f"{square}x{target.upper()}{pos2[0]}", self.copy_board())
+                if self.__pawn_promote(piece, r2, c2):
+                    print(f"{square}x{pos2}={self.board[r2][c2].upper()}")
+                    self.__update_move((pos1, pos2), f"{square}x{pos2}={self.board[r2][c2].upper()}", self.copy_board())
+                else:
+                    print(f"{square}x{pos2}")
+                    self.__update_move((pos1, pos2), f"{square}x{pos2}", self.copy_board()) if self.board[r2][c2][0].lower() == "p" else self.__update_move((pos1, pos2), f"{square}x{target.upper()}{pos2[0]}", self.copy_board())
                 return True
             print(f"\nMove: {piece.upper()}{pos1[0]}x{pos2}")
             self.__update_move((pos1, pos2), f"{piece.upper()}{pos1[0]}x{pos2}", self.copy_board())
@@ -345,9 +342,10 @@ class Chess:
     def undo(self) -> None:
 
         if self.tail.prev != self.head:
+            self.board = self.tail.prev.board
             self.tail.prev = self.tail.prev.prev
             self.tail.prev.next = self.tail
-            self.board = self.tail.prev.board
+            self.white_to_move = not self.white_to_move
 
     def show_board(self) -> None:
         print("  a b c d e f g h")
@@ -399,6 +397,27 @@ class Chess:
                 rights += "q"
 
         return rights if rights else "-"
+
+    def __pawn_promote(self, pawn, r2, c2) -> bool:
+        valid_promotion = ["q","r","n","b"]
+
+        while self.__is_pawn_promote(pawn, r2):
+            promotion_piece = input("Promotion Piece: ").lower()
+            if promotion_piece in valid_promotion:
+                if (pawn.isupper() and r2 == 0):
+                    self.board[r2][c2] = promotion_piece.upper()
+                    return True
+                elif (pawn.islower() and r2 == 7):
+                    self.board[r2][c2] = promotion_piece.lower()
+                    return True
+                return False
+            else:
+                print(f"{promotion_piece} is invalid!")
+    
+    def __is_pawn_promote(self, pawn, r2):
+        if (pawn.isupper() and r2 == 0) or (pawn.islower() and r2 == 7):
+            return True
+        return False
 
 
     def to_fen(self) -> str:

@@ -1,14 +1,41 @@
-from backend.engine.Engine import run_game
+from backend.engine.GameWrapper import GameWrapper
+from flask import Flask, jsonify, request
+from flask_cors import CORS
+from flask import send_from_directory
 
-def main():
-    return run_game()
+app = Flask(__name__)
+CORS(app)
+
+game = GameWrapper()
+
+@app.route("/api/board", methods=["GET"])
+def get_board():
+    return jsonify({"board": game.get_board()})
+
+@app.route("/api/move", methods=["POST"])
+def make_move():
+    data = request.json
+    pos1 = data["from"]
+    pos2 = data["to"]
+    
+    move_result = game.make_move(pos1, pos2)
+    return jsonify({
+        "board": game.get_board(),
+        "valid": move_result
+    })
+
+@app.route("/api/undo", methods=["POST"])
+def undo():
+    return jsonify({"board": game.undo()})
+
+@app.route("/api/stockfish", methods=["GET"])
+def stockfish_move():
+    return jsonify(game.get_stockfish_move())
+
+@app.route("/chess", methods=["GET"])
+def chess():
+    return jsonify({"board": f"{get_board()}"})
     
 
 if __name__ == "__main__":
-    save = main()
-
-    print("Final Board:")
-    for row in save.board:
-        print(" ".join(row))
-
-    save.show_moves()
+    app.run(debug=True)
