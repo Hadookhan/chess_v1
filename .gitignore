@@ -5,3 +5,6 @@ backend/engine/get_platform.py
 /backend/engine/__pycache__
 package-lock.json
 /frontend
+/node_modules
+package.json
+backend/Server.go
