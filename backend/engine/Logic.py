@@ -1,13 +1,13 @@
 
 board = [
-    ["r","n","b","q","k","b","n","r"],
+    ["r","n","b","k","q","b","n","r"],
     ["p","p","p","p","p","p","p","p"],
     [".",".",".",".",".",".",".","."],
     [".",".",".",".",".",".",".","."],
     [".",".",".",".",".",".",".","."],
     [".",".",".",".",".",".",".","."],
     ["P","P","P","P","P","P","P","P"],
-    ["R","N","B","Q","K","B","N","R"]
+    ["R","N","B","K","Q","B","N","R"]
 ]
 
 class Node:
@@ -221,36 +221,9 @@ class Chess:
             return False
 
         if piece.isupper():  # White
-            if pos1 != "e1" or pos2 != "g1":
+            if pos1 != "d1" or pos2 != "b1":
                 return False
-            if not self.__can_castle("e1") or not self.__can_castle("h1"):
-                return False
-            if not self.__path_is_clear(piece, pos1, pos2):
-                return False
-            # NOTE: Add king safety checks here
-            self.board[7][7] = "."
-            self.board[7][5] = "R"
-            return True
-
-        else:  # Black
-            if pos1 != "e8" or pos2 != "g8":
-                return False
-            if not self.__can_castle("e8") or not self.__can_castle("h8"):
-                return False
-            if not self.__path_is_clear(piece, pos1, pos2):
-                return False
-            self.board[0][7] = "."
-            self.board[0][5] = "r"
-            return True
-        
-    def __long_castle(self, pos1, pos2, piece, target):
-        if piece.lower() != "k" or target != ".":
-            return False
-
-        if piece.isupper():  # White
-            if pos1 != "e1" or pos2 != "c1":
-                return False
-            if not self.__can_castle("e1") or not self.__can_castle("a1"):
+            if not self.__can_castle("d1") or not self.__can_castle("a1"):
                 return False
             if not self.__path_is_clear(piece, pos1, pos2):
                 return False
@@ -260,14 +233,41 @@ class Chess:
             return True
 
         else:  # Black
-            if pos1 != "e8" or pos2 != "c8":
+            if pos1 != "d8" or pos2 != "b8":
                 return False
-            if not self.__can_castle("e8") or not self.__can_castle("a8"):
+            if not self.__can_castle("d8") or not self.__can_castle("a8"):
                 return False
             if not self.__path_is_clear(piece, pos1, pos2):
                 return False
             self.board[0][0] = "."
             self.board[0][3] = "r"
+            return True
+        
+    def __long_castle(self, pos1, pos2, piece, target):
+        if piece.lower() != "k" or target != ".":
+            return False
+
+        if piece.isupper():  # White
+            if pos1 != "d1" or pos2 != "f1":
+                return False
+            if not self.__can_castle("d1") or not self.__can_castle("h1"):
+                return False
+            if not self.__path_is_clear(piece, pos1, pos2):
+                return False
+            # NOTE: Add king safety checks here
+            self.board[7][7] = "."
+            self.board[7][4] = "R"
+            return True
+
+        else:  # Black
+            if pos1 != "d8" or pos2 != "f8":
+                return False
+            if not self.__can_castle("d8") or not self.__can_castle("h8"):
+                return False
+            if not self.__path_is_clear(piece, pos1, pos2):
+                return False
+            self.board[0][7] = "."
+            self.board[0][4] = "r"
             return True
 
     def __find_king(self, white=True) -> tuple:
@@ -383,14 +383,14 @@ class Chess:
         rights = ""
 
         # Check white
-        if not self.__has_moved("e1"):
+        if not self.__has_moved("d1"):
             if not self.__has_moved("h1"):
                 rights += "K"
             if not self.__has_moved("a1"):
                 rights += "Q"
 
         # Check black
-        if not self.__has_moved("e8"):
+        if not self.__has_moved("d8"):
             if not self.__has_moved("h8"):
                 rights += "k"
             if not self.__has_moved("a8"):
