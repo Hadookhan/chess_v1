@@ -229,7 +229,7 @@ class Chess:
                 return False
             # NOTE: Add king safety checks here
             self.board[7][0] = "."
-            self.board[7][3] = "R"
+            self.board[7][2] = "R"
             return True
 
         else:  # Black
@@ -240,7 +240,7 @@ class Chess:
             if not self.__path_is_clear(piece, pos1, pos2):
                 return False
             self.board[0][0] = "."
-            self.board[0][3] = "r"
+            self.board[0][2] = "r"
             return True
         
     def __long_castle(self, pos1, pos2, piece, target):

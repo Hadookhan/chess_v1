@@ -1,7 +1,6 @@
 from backend.engine.GameWrapper import GameWrapper
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from flask import send_from_directory
 
 app = Flask(__name__)
 CORS(app)
@@ -28,13 +27,13 @@ def make_move():
 def undo():
     return jsonify({"board": game.undo()})
 
+@app.route("/api/get-moves", methods=["GET"])
+def get_moves():
+    return jsonify({"moves": game.get_moves()})
+
 @app.route("/api/stockfish", methods=["GET"])
 def stockfish_move():
     return jsonify(game.get_stockfish_move())
-
-@app.route("/chess", methods=["GET"])
-def chess():
-    return jsonify({"board": f"{get_board()}"})
     
 
 if __name__ == "__main__":
