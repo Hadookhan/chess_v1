@@ -1,4 +1,4 @@
-from backend.engine.GameWrapper import GameWrapper
+from engine.GameWrapper import GameWrapper
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 

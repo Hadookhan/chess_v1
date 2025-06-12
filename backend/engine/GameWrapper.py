@@ -1,8 +1,8 @@
 # backend/GameWrapper.py
 import chess
 import chess.engine
-from backend.engine.Logic import Chess, board
-from backend.engine.get_platform import get_stockfish_binary
+from engine.Logic import Chess, board
+from engine.get_platform import get_stockfish_binary
 
 class GameWrapper:
     def __init__(self):
