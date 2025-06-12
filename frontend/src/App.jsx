@@ -1,0 +1,85 @@
+import { useEffect, useState } from "react";
+import ChessBoard from "./ChessBoard";
+import Return from "./Return"
+import Moves from "./Moves"
+
+function App() {
+  const [board, setBoard] = useState([]);
+  const [from, setFrom] = useState(null);
+  const [selectedSquare, setSelectedSquare] = useState(null);
+  const [moves, setMoves] = useState(null);
+
+
+  useEffect(() => {
+    fetch("http://localhost:5000/api/board")
+      .then(res => res.json())
+      .then(data => setBoard(data.board));
+  }, []);
+
+  const handleSquareClick = (row, col) => {
+    if (!from) {
+      setFrom({ row, col });
+    } else {
+      const to = { row, col };
+
+      const fromStr = String.fromCharCode(97 + from.col) + (8 - from.row); // string conv from ASCII code for from pos
+      const toStr = String.fromCharCode(97 + to.col) + (8 - to.row); // string conv from ASCII code for to pos
+
+      fetch("http://localhost:5000/api/move", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ from: fromStr, to: toStr }),
+      })
+        .then(res => res.json())
+        .then(data => {
+          setBoard(data.board);
+          setFrom(null);
+        });
+    }
+  };
+
+  const handleButtonClick = () => {
+    fetch("http://localhost:5000/api/undo", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    })
+    .then(response => response.json()) // Parse JSON first
+    .then(data => {
+      setBoard(data.board);
+    })
+    .catch((error) => {
+      console.error("Error during undo:", error);
+    });
+};
+
+  const getMoves = () => {
+    fetch("http://localhost:5000/api/get-moves", {
+      method: "GET",
+    })
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json()
+      })
+      .then(data => {
+        console.log("Fetched moves:", data.moves);
+        setMoves(data.moves);
+      })
+      .catch(err => {
+        console.error("Fetch failed:", err);
+        return [];
+      });
+    }
+
+  return (
+    <div>
+      <h1>Chess Game</h1>
+      <Return onButtonClick={handleButtonClick} />
+      <ChessBoard board={board} onSquareClick={handleSquareClick} selectedSquare={selectedSquare} />
+      <Moves moves={moves} />
+    </div>
+  );
+}
+
+export default App;

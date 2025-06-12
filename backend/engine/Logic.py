@@ -67,8 +67,6 @@ class Chess:
         if self.is_valid(pos1, pos2):
             self.white_to_move = not self.white_to_move
             #print(self.__in_check(self.white_to_move))
-            if self.__in_check(self.white_to_move):
-                print("Check!")
             self.board[r1][c1] = "."
             self.board[r2][c2] = piece
             print(f"{'Whites Turn' if self.white_to_move else 'Blacks Turn'}")
@@ -305,6 +303,9 @@ class Chess:
         print(r2, c2)
         square = self.to_algebraic(r1, c1)
 
+        if self.__in_check(self.white_to_move):
+            print("Check!")
+
         if target == ".":
             if piece.lower() == "p":
                 if self.__pawn_promote(piece, r2, c2):
@@ -399,20 +400,18 @@ class Chess:
         return rights if rights else "-"
 
     def __pawn_promote(self, pawn, r2, c2) -> bool:
-        valid_promotion = ["q","r","n","b"]
+        valid_promotion = ["q", "r", "n", "b"]
 
-        while self.__is_pawn_promote(pawn, r2):
-            promotion_piece = input("Promotion Piece: ").lower()
-            if promotion_piece in valid_promotion:
-                if (pawn.isupper() and r2 == 0):
-                    self.board[r2][c2] = promotion_piece.upper()
-                    return True
-                elif (pawn.islower() and r2 == 7):
-                    self.board[r2][c2] = promotion_piece.lower()
-                    return True
-                return False
-            else:
-                print(f"{promotion_piece} is invalid!")
+        if not self.__is_pawn_promote(pawn, r2):
+            return False
+
+        promotion_piece = input("Promotion Piece (q, r, n, b): ").lower()
+        if promotion_piece in valid_promotion:
+            self.board[r2][c2] = promotion_piece.upper() if pawn.isupper() else promotion_piece.lower()
+            return True
+        else:
+            print(f"'{promotion_piece}' is invalid. Please enter one of: {', '.join(valid_promotion)}")
+
     
     def __is_pawn_promote(self, pawn, r2):
         if (pawn.isupper() and r2 == 0) or (pawn.islower() and r2 == 7):
