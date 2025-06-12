@@ -11,7 +11,7 @@ function App() {
 
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/board")
+    fetch("https://chess-v1.onrender.com/api/board")
       .then(res => res.json())
       .then(data => setBoard(data.board));
   }, []);
@@ -25,7 +25,7 @@ function App() {
       const fromStr = String.fromCharCode(97 + from.col) + (8 - from.row); // string conv from ASCII code for from pos
       const toStr = String.fromCharCode(97 + to.col) + (8 - to.row); // string conv from ASCII code for to pos
 
-      fetch("http://localhost:5000/api/move", {
+      fetch("https://chess-v1.onrender.com/api/move", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ from: fromStr, to: toStr }),
@@ -39,7 +39,7 @@ function App() {
   };
 
   const handleButtonClick = () => {
-    fetch("http://localhost:5000/api/undo", {
+    fetch("https://chess-v1.onrender.com/api/undo", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
     })
@@ -53,7 +53,7 @@ function App() {
 };
 
   const getMoves = () => {
-    fetch("http://localhost:5000/api/get-moves", {
+    fetch("https://chess-v1.onrender.com/api/get-moves", {
       method: "GET",
     })
       .then(res => {
