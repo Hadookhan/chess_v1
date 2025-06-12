@@ -16,4 +16,4 @@ My personal recreation of Chess
 
 ## CURRENT WORK IN PROGRESS
 
-https://chess-v1-m7mk-xni844yoa-hadookhans-projects.vercel.app
+[Chess Website Link](https://www.hadi-khan-chess.com)
