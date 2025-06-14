@@ -1,4 +1,4 @@
-import './ChessBoard.css'
+import './ChessBoard.css';
 
 const ChessBoard = ({ board, onSquareClick, selectedSquare }) => {
   return (
