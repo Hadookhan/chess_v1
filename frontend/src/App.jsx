@@ -11,8 +11,8 @@ function App() {
   const [moves, setMoves] = useState(null);
 
   useEffect(() => {
-    const socket = io("http://chess-v1.onrender.com");
-    
+    const socket = io("https://chess-v1.onrender.com");
+
     socket.on("move", (data) => {
       console.log("Received move:", data);
       setBoard(data.board);
