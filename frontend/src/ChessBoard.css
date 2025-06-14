@@ -7,10 +7,3 @@
   padding: 20px;
 }
 
-.board-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
-

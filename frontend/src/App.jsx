@@ -94,7 +94,7 @@ function App() {
       <h1>Chess Game</h1>
       <Return onButtonClick={handleButtonClick} />
       <ChessBoard board={board} onSquareClick={handleSquareClick} selectedSquare={selectedSquare} />
-      <Moves moves={moves} />
+      <Moves moves={getMoves} />
     </div>
   );
 }
