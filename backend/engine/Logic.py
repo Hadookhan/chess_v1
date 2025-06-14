@@ -360,9 +360,11 @@ class Chess:
     def show_moves(self) -> list:
         cur = self.head.next
         queue = []
+        i = 0
+        j = 1
 
         while cur != self.tail:
-            queue.append(list(cur.move))
+            queue.append(list(cur.move[i], cur.move[j]))
             cur = cur.next
         
         return queue
