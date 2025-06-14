@@ -1,3 +1,5 @@
+import './ChessBoard.css'
+
 const ChessBoard = ({ board, onSquareClick, selectedSquare }) => {
   return (
     <div className="chess-board" style={{ display: "grid", gridTemplateColumns: "repeat(8, 60px)" }}>
