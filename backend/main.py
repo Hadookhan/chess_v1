@@ -6,7 +6,7 @@ import os
 
 app = Flask(__name__)
 CORS(app, origins=["https://www.hadi-khan-chess.com"])
-socketio = SocketIO(app, cors_allowed_origins=["https://www.hadi-khan-chess.com"])  # Enable CORS for client
+socketio = SocketIO(app, cors_allowed_origins=["https://www.hadi-khan-chess.com"], async_mode="eventlet")  # Enable CORS for client
 
 game = GameWrapper()
 
@@ -53,5 +53,5 @@ def handle_disconnect():
 
 if __name__ == "__main__":
     import eventlet
-    import eventlet.wsgi
+    eventlet.monkey_patch()
     socketio.run(app, host="0.0.0.0", debug=True, port=int(os.environ.get("PORT", 5000)))
