@@ -2,12 +2,24 @@ import { useEffect, useState } from "react";
 import ChessBoard from "./ChessBoard";
 import Return from "./Return"
 import Moves from "./Moves"
+import io from "socket.io-client";
 
 function App() {
   const [board, setBoard] = useState([]);
   const [from, setFrom] = useState(null);
   const [selectedSquare, setSelectedSquare] = useState(null);
   const [moves, setMoves] = useState(null);
+
+  const socket = io("http://hadi-khan-chess.com");
+
+  useEffect(() => {
+    socket.on("move", (data) => {
+      console.log("Received move:", data);
+      setBoard(data.board);
+    });
+
+    return () => socket.disconnect();
+  }, []);
 
 
   useEffect(() => {

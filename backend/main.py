@@ -1,9 +1,11 @@
 from engine.GameWrapper import GameWrapper
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
 CORS(app, origins=["https://www.hadi-khan-chess.com"])
+socketio = SocketIO(app, cors_allowed_origins="*")  # Enable CORS for client
 
 game = GameWrapper()
 
@@ -16,6 +18,8 @@ def make_move():
     data = request.json
     pos1 = data["from"]
     pos2 = data["to"]
+
+    socketio.emit("move", {"from": pos1, "to": pos2, "board": game.board})
     
     move_result = game.make_move(pos1, pos2)
     return jsonify({
