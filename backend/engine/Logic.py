@@ -364,8 +364,10 @@ class Chess:
         j = 1
 
         while cur != self.tail:
-            queue.append(list(cur.move[i], cur.move[j]))
+            queue.append((cur.move[i], cur.move[j]))
             cur = cur.next
+            i += 2
+            j += 2
         
         return queue
     
