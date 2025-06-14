@@ -359,17 +359,16 @@ class Chess:
 
     def show_moves(self) -> list:
         cur = self.head.next
-        queue = []
-        i = 0
-        j = 1
+        moves = []
 
         while cur != self.tail:
-            queue.append((cur.move[i], cur.move[j]))
+            moves.append(cur.move)
             cur = cur.next
-            i += 2
-            j += 2
-        
-        return queue
+
+        # Group into tuples of (White, Black)
+        return [(moves[i], moves[i+1]) if i+1 < len(moves) else (moves[i], None)
+                for i in range(0, len(moves), 2)]
+
     
     def get_moves(self) -> list:
         cur = self.head.next
