@@ -2,6 +2,7 @@ from engine.GameWrapper import GameWrapper
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit
+import os
 
 app = Flask(__name__)
 CORS(app, origins=["https://www.hadi-khan-chess.com"])
@@ -42,4 +43,4 @@ def stockfish_move():
     
 
 if __name__ == "__main__":
-    socketio.run(app, debug=True)
+    socketio.run(app, host="0.0.0.0", debug=True, port=int(os.environ.get("PORT", 5000)))
