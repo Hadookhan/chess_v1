@@ -1,3 +1,6 @@
+import eventlet
+eventlet.monkey_patch()
+
 from engine.GameWrapper import GameWrapper
 from flask import Flask, jsonify, request
 from flask_cors import CORS
@@ -38,7 +41,11 @@ def undo():
 
     board = game.undo()
 
-    socketio.emit("move", {"board": game.get_board()})
+    socketio.emit("move", {
+    "from": None,
+    "to": None,
+    "board": game.get_board()
+})
 
     return jsonify({"board": board})
 
@@ -67,6 +74,4 @@ def on_join(data):
     
 
 if __name__ == "__main__":
-    import eventlet
-    eventlet.monkey_patch()
     socketio.run(app, host="0.0.0.0", debug=True, port=int(os.environ.get("PORT", 5000)))
