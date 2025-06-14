@@ -357,18 +357,15 @@ class Chess:
             print(row_str)
         print()
 
-    def show_moves(self) -> None:
+    def show_moves(self) -> list:
         cur = self.head.next
-        n = 1
         queue = []
 
         while cur != self.tail:
             queue.append(cur.move)
             cur = cur.next
         
-        for i in range(1, len(queue), 2):
-            print(f"{n} | {queue[i-1]} {queue[i]}")
-            n+=1
+        return queue
     
     def get_moves(self) -> list:
         cur = self.head.next

@@ -23,7 +23,7 @@ class GameWrapper:
         return self.game.custom_board_to_fen(self.game.board)
     
     def get_moves(self):
-        return self.game.get_moves()
+        return self.game.show_moves()
 
     def get_stockfish_move(self):
         board_fen = self.get_fen()
