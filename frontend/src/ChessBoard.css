@@ -1,4 +1,16 @@
 .chess-board {
-    right: 0.5;
-    align-items: center;
+  display: grid;
+  grid-template-columns: repeat(8, 60px);
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  padding: 20px;
 }
+
+.board-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+

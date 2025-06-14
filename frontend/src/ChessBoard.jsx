@@ -2,37 +2,39 @@ import './ChessBoard.css';
 
 const ChessBoard = ({ board, onSquareClick, selectedSquare }) => {
   return (
-    <div className="chess-board" style={{ display: "grid", gridTemplateColumns: "repeat(8, 60px)" }}>
-      {board.map((row, rowIndex) =>
-        row.map((cell, colIndex) => {
-          const isSelected =
-            selectedSquare &&
-            selectedSquare[0] === rowIndex &&
-            selectedSquare[1] === colIndex;
+    <div className='board-wrapper'>
+      <div className="chess-board">
+        {board.map((row, rowIndex) =>
+          row.map((cell, colIndex) => {
+            const isSelected =
+              selectedSquare &&
+              selectedSquare[0] === rowIndex &&
+              selectedSquare[1] === colIndex;
 
-          const defaultColor = (rowIndex + colIndex) % 2 === 0 ? "darkgrey" : "#668";
-          const backgroundColor = isSelected ? "black" : defaultColor;
+            const defaultColor = (rowIndex + colIndex) % 2 === 0 ? "darkgrey" : "#668";
+            const backgroundColor = isSelected ? "black" : defaultColor;
 
-          return (
-            <div
-              key={`${rowIndex}-${colIndex}`}
-              onClick={() => onSquareClick(rowIndex, colIndex)}
-              style={{
-                width: 60,
-                height: 60,
-                backgroundColor,
-                color: cell === cell.toUpperCase() ? "white" : "black",
-                fontSize: 36,
-                textAlign: "center",
-                lineHeight: "60px",
-                cursor: "pointer",
-              }}
-            >
-              {cell !== "." ? cell : ""}
-            </div>
-          );
-        })
-      )}
+            return (
+              <div
+                key={`${rowIndex}-${colIndex}`}
+                onClick={() => onSquareClick(rowIndex, colIndex)}
+                style={{
+                  width: 60,
+                  height: 60,
+                  backgroundColor,
+                  color: cell === cell.toUpperCase() ? "white" : "black",
+                  fontSize: 36,
+                  textAlign: "center",
+                  lineHeight: "60px",
+                  cursor: "pointer",
+                }}
+              >
+                {cell !== "." ? cell : ""}
+              </div>
+            );
+          })
+        )}
+      </div>
     </div>
   );
 };
