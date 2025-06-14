@@ -19,9 +19,10 @@ def make_move():
     pos1 = data["from"]
     pos2 = data["to"]
 
-    socketio.emit("move", {"from": pos1, "to": pos2, "board": game.get_board})
-    
     move_result = game.make_move(pos1, pos2)
+
+    socketio.emit("move", {"from": pos1, "to": pos2, "board": game.get_board()})
+    
     return jsonify({
         "board": game.get_board(),
         "valid": move_result
@@ -41,4 +42,4 @@ def stockfish_move():
     
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    socketio.run(debug=True)
