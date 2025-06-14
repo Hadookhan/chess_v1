@@ -5,8 +5,8 @@ from flask_socketio import SocketIO, join_room
 import os
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True)
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
+CORS(app, origins="https://chess-v1.onrender.com")
+socketio = SocketIO(app, cors_allowed_origins=["https://chess-v1.onrender.com"], async_mode="eventlet")
 
 game = GameWrapper()
 
