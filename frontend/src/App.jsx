@@ -10,9 +10,9 @@ function App() {
   const [selectedSquare, setSelectedSquare] = useState(null);
   const [moves, setMoves] = useState(null);
 
-  const socket = io("http://hadi-khan-chess.com");
-
   useEffect(() => {
+    const socket = io("http://chess-v1.onrender.com");
+    
     socket.on("move", (data) => {
       console.log("Received move:", data);
       setBoard(data.board);
