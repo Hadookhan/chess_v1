@@ -22,6 +22,10 @@ function App() {
       console.log("Received move:", data);
       setBoard(data.board);
     });
+    socket.on("undo", (data) => {
+      console.log("Received move:", data);
+      setBoard(data.board);
+    });
 
     return () => socket.disconnect();
   }, []);

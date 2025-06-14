@@ -1,7 +1,7 @@
 from engine.GameWrapper import GameWrapper
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from flask_socketio import SocketIO, join_room
+from flask_socketio import SocketIO, join_room, emit
 import os
 
 app = Flask(__name__)
@@ -35,7 +35,12 @@ def make_move():
 
 @app.route("/api/undo", methods=["POST"])
 def undo():
-    return jsonify({"board": game.undo()})
+
+    board = game.undo()
+
+    socketio.emit("move", {"board": game.get_board()})
+
+    return jsonify({"board": board})
 
 @app.route("/api/get-moves", methods=["GET"])
 def get_moves():
