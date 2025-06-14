@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import ChessBoard from "./ChessBoard";
 import Return from "./Return"
 import Moves from "./Moves"
-import io from "socket.io-client";
+import { io } from "socket.io-client";
 
 function App() {
   const [board, setBoard] = useState([]);
@@ -11,10 +11,12 @@ function App() {
   const [moves, setMoves] = useState(null);
 
   useEffect(() => {
-    const socket = io("https://chess-v1.onrender.com", {
+    const socket = io("wss://chess-v1.onrender.com", {
     transports: ["websocket"],
     withCredentials: true, // optional but helps with cookies
     });
+
+    socket.emit("join", { room: "main" });
 
     socket.on("move", (data) => {
       console.log("Received move:", data);

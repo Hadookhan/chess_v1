@@ -1,14 +1,18 @@
 from engine.GameWrapper import GameWrapper
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from flask_socketio import SocketIO, emit
+from flask_socketio import SocketIO, join_room
 import os
 
 app = Flask(__name__)
-CORS(app, origins=["https://www.hadi-khan-chess.com"])
-socketio = SocketIO(app, cors_allowed_origins=["https://www.hadi-khan-chess.com"], async_mode="eventlet")  # Enable CORS for client
+CORS(app, supports_credentials=True)
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
 
 game = GameWrapper()
+
+@app.route("/")
+def home():
+    return "Chess backend is running"
 
 @app.route("/api/board", methods=["GET"])
 def get_board():
@@ -48,6 +52,12 @@ def handle_connect():
 @socketio.on('disconnect')
 def handle_disconnect():
     print("Client disconnected")
+
+@socketio.on('join')
+def on_join(data):
+    room = data['room']
+    join_room(room)
+    emit('status', {'msg': f'User joined room {room}'}, room=room)
 
     
 
