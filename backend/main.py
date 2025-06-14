@@ -19,7 +19,7 @@ def make_move():
     pos1 = data["from"]
     pos2 = data["to"]
 
-    socketio.emit("move", {"from": pos1, "to": pos2, "board": game.board})
+    socketio.emit("move", {"from": pos1, "to": pos2, "board": game.get_board})
     
     move_result = game.make_move(pos1, pos2)
     return jsonify({
