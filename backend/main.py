@@ -8,7 +8,7 @@ from flask_socketio import SocketIO, join_room, emit
 import os
 
 app = Flask(__name__)
-CORS(app, origins="https://chess-v1.onrender.com")
+CORS(app, origins=["https://hadi-khan-chess.com"])
 socketio = SocketIO(app, cors_allowed_origins=["https://chess-v1.onrender.com"], async_mode="eventlet")
 
 game = GameWrapper()
