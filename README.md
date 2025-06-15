@@ -15,7 +15,7 @@ My personal recreation of Chess
 6. Hosted Backend on Render.com
 7. Uses Websockets to perform real-time gameplay
 
-## T0 D0
+## TO DO
 1. Implement chat
 2. Add Checking, Checkmating & Pawn promotion
 3. Add multiplayer sessions
