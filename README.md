@@ -13,6 +13,17 @@ My personal recreation of Chess
 4. Linked backend using Flask
 5. Hosted Frontend on Vercel.com
 6. Hosted Backend on Render.com
+7. Uses Websockets to perform real-time gameplay
+
+## T0 D0
+1. Implement chat
+2. Add Checking, Checkmating & Pawn promotion
+3. Add multiplayer sessions
+4. Add sign-up & Database
+5. Implement stockfish to frontend
+# __Bonuses__
+1. Connect to Roblox
+2. Add Currency/Rank
 
 ## CURRENT WORK IN PROGRESS
 
