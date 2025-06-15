@@ -6,3 +6,4 @@ backend/engine/get_platform.py
 package-lock.json
 /node_modules
 package.json
+.vercel
