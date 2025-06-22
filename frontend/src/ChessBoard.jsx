@@ -1,5 +1,5 @@
 import './ChessBoard.css';
-import { getPieceImage } from './convertLetterstoPieces';
+import getPieceImage from './convertLetterstoPieces';
 
 const ChessBoard = ({ board, onSquareClick, selectedSquare }) => {
   return (
