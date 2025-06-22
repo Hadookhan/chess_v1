@@ -1,5 +1,7 @@
 body, html {
   height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .page {
@@ -22,7 +24,7 @@ body, html {
 
 @media only screen and (min-width: 600px) {
   .page {
-    margin-left: min-width/2
+    padding: 2rem;
   }
 }
 
