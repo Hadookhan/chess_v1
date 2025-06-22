@@ -16,24 +16,6 @@ body, html {
   box-sizing: border-box;
 }
 
-@media only screen and (max-width: 600px) {
-  .page {
-    padding: 1rem;
-  }
-}
-
-@media only screen and (min-width: 600px) and (max-width: 1000px) {
-  .page {
-    padding: 10rem;
-  }
-}
-
-@media only screen and (min-width: 1000px) and (max-width: 2000px) {
-  .page {
-    padding: 20rem;
-  }
-}
-
 /* This just stacks board + controls inside the center */
 .game {
   display: flex;

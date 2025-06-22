@@ -93,13 +93,16 @@ function App() {
     }
 
   return (
-    <div className="page">
-      <h1>Chess Game</h1>
-      <div className="game">
-        <Return onButtonClick={handleButtonClick} />
-        <ChessBoard board={board} onSquareClick={handleSquareClick} selectedSquare={selectedSquare} />
+    <HTML>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <div className="page">
+        <h1>Chess Game</h1>
+        <div className="game">
+          <Return onButtonClick={handleButtonClick} />
+          <ChessBoard board={board} onSquareClick={handleSquareClick} selectedSquare={selectedSquare} />
+        </div>
       </div>
-    </div>
+    </HTML>
   );
 }
 
