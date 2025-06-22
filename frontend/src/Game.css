@@ -1,15 +1,24 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+/* This becomes the main container that centers everything */
 .page {
   display: flex;
   flex-direction: column;
-  align-items: center; /* <-- This horizontally centers children */
-  padding-top: 2rem;
+  justify-content: center;  /* vertically center */
+  align-items: center;      /* horizontally center */
+  min-height: 100vh;        /* full screen */
+  background-color: #222;   /* optional: dark background */
+  color: white;
 }
 
+/* This just stacks board + controls inside the center */
 .game {
   display: flex;
-  justify-content: center;   /* Horizontally center */
-  align-items: center;       /* Vertically center */
-  min-height: 100vh;         /* Take full viewport height */
-  flex-direction: column;    /* Stack children vertically */
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
 }
-
