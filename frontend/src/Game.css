@@ -22,7 +22,7 @@ body, html {
   }
 }
 
-@media only screen and (min-width: 1000px) {
+@media only screen and (min-width: 600px) and (max-width: 1000px) {
   .page {
     padding: 10rem;
   }
