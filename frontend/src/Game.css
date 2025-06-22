@@ -4,6 +4,10 @@ body, html {
 
 /* This becomes the main container that centers everything */
 .page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;  /* vertically center */
+  align-items: center;      /* horizontally center */
   min-height: 100vh;        /* full screen */
   background-color: #222;   /* optional: dark background */
   color: white;
