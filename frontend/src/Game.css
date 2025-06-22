@@ -22,7 +22,7 @@ body, html {
 
 @media only screen and (min-width: 600px) {
   .page {
-    margin: 1rem;
+    margin-left: min-width/2
   }
 }
 
