@@ -2,7 +2,20 @@ body, html {
   height: 100%;
 }
 
-@media (max-width:1000px) and (min-width:700px) {
+.page {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;  /* vertically center */
+        align-items: center;      /* horizontally center */
+        min-height: 100vh;        /* full screen */
+        background-color: #222;   /* optional: dark background */
+        color: white;
+        width: 150%;
+        margin-left: 25%;
+        margin-right: 25%;
+}
+
+@media (max-width:1000px) and (min-width:500px) {
     .page {
         display: flex;
         flex-direction: column;
@@ -13,6 +26,7 @@ body, html {
         color: white;
         width: 150%;
         margin-left: calc(15px + (100vw - 700px) * (15 - 30) / (700 -  1000));
+        margin-right: calc(15px + (100vw - 700px) * (15 - 30) / (700 -  1000));
     }
 };
 
