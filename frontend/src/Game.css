@@ -21,4 +21,5 @@ body, html {
   flex-direction: column;
   gap: 1rem;
   align-items: center;
+  margin: auto;
 }
