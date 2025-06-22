@@ -3,6 +3,7 @@ import ChessBoard from "./ChessBoard";
 import Return from "./Return"
 import Moves from "./Moves"
 import { io } from "socket.io-client";
+import './Game.css';
 
 function App() {
   const [board, setBoard] = useState([]);
@@ -94,8 +95,10 @@ function App() {
   return (
     <div>
       <h1>Chess Game</h1>
-      <Return onButtonClick={handleButtonClick} />
-      <ChessBoard board={board} onSquareClick={handleSquareClick} selectedSquare={selectedSquare} />
+      <div className="game">
+        <Return onButtonClick={handleButtonClick} />
+        <ChessBoard board={board} onSquareClick={handleSquareClick} selectedSquare={selectedSquare} />
+      </div>
     </div>
   );
 }
