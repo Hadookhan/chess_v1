@@ -20,6 +20,12 @@ body, html {
   }
 }
 
+@media only screen and (min-width: 600px) {
+  .page {
+    padding: 1rem;
+  }
+}
+
 /* This just stacks board + controls inside the center */
 .game {
   display: flex;
