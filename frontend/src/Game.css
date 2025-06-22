@@ -1,5 +1,4 @@
 body, html {
-  padding: 0;
   height: 100%;
 }
 
@@ -12,7 +11,7 @@ body, html {
   min-height: 100vh;        /* full screen */
   background-color: #222;   /* optional: dark background */
   color: white;
-  width: 50%;
+  width: 150%;
   margin: auto;
 }
 
