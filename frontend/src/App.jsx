@@ -93,12 +93,10 @@ function App() {
     }
 
   return (
-    <div>
+    <div className="game">
       <h1>Chess Game</h1>
-      <div className="game">
-        <Return onButtonClick={handleButtonClick} />
-        <ChessBoard board={board} onSquareClick={handleSquareClick} selectedSquare={selectedSquare} />
-      </div>
+      <Return onButtonClick={handleButtonClick} />
+      <ChessBoard board={board} onSquareClick={handleSquareClick} selectedSquare={selectedSquare} />
     </div>
   );
 }
