@@ -1,5 +1,4 @@
 body, html {
-  margin: 0;
   padding: 0;
   height: 100%;
 }
@@ -13,6 +12,8 @@ body, html {
   min-height: 100vh;        /* full screen */
   background-color: #222;   /* optional: dark background */
   color: white;
+  width: 50%;
+  margin: auto;
 }
 
 /* This just stacks board + controls inside the center */
