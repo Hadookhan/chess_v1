@@ -5,14 +5,22 @@ from engine.GameWrapper import GameWrapper
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_socketio import SocketIO, join_room, emit
-from werkzeug.security import generate_password_hash
-from engine.Client import User, SessionLocal
 import os
 
 app = Flask(__name__)
-CORS(app, origins="http://localhost:5000")
+CORS(app, origins=[
+    "https://chess-v1.onrender.com",
+    "https://hadi-khan-chess.com",
+    "https://www.hadi-khan-chess.com",
+    "chess-v1-git-main-hadookhans-projects.vercel.app",
+    "chess-v1-pvotsal7h-hadookhans-projects.vercel.app"
+])
 socketio = SocketIO(app, cors_allowed_origins=[
-    "http://localhost:5000"
+    "https://chess-v1.onrender.com",
+    "https://hadi-khan-chess.com",
+    "https://www.hadi-khan-chess.com",
+    "chess-v1-git-main-hadookhans-projects.vercel.app",
+    "chess-v1-pvotsal7h-hadookhans-projects.vercel.app"
 ], async_mode="eventlet")
 
 game = GameWrapper()
@@ -20,37 +28,6 @@ game = GameWrapper()
 @app.route("/")
 def home():
     return "Chess backend is running"
-
-@app.route("/api/register", methods=["POST"])
-def register():
-    session = SessionLocal()
-    data = request.json
-
-    username = data.get("username")
-    email = data.get("email")
-    password = data.get("password")
-
-    if not username or not email or not password:
-        return jsonify({"error": "All fields required"}), 400
-
-    if session.query(User).filter_by(username=username).first():
-        return jsonify({"error": "Username already exists"}), 409
-
-    if session.query(User).filter_by(email=email).first():
-        return jsonify({"error": "Email already registered"}), 409
-
-    new_user = User(
-        username=username,
-        email=email,
-        password_hash=generate_password_hash(password)
-    )
-
-    session.add(new_user)
-    session.commit()
-    session.close()
-
-    return jsonify({"message": "User registered successfully"}), 201
-
 
 @app.route("/api/board", methods=["GET"])
 def get_board():
@@ -109,4 +86,4 @@ def on_join(data):
     
 
 if __name__ == "__main__":
-    socketio.run(app, debug=True)
+    socketio.run(app, host="0.0.0.0", debug=True, port=int(os.environ.get("PORT", 5000)))
