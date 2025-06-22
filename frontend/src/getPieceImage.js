@@ -6,7 +6,7 @@ const getPieceImage = (cell) => {
   const piece = cell.toLowerCase();
 
   return cell === cell.toUpperCase()
-    ? white[piece] // white piece
+    ? white[piece.toUpperCase] // white piece
     : black[piece]; // black piece
 };
 
