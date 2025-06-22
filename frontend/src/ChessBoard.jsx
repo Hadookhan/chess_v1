@@ -1,4 +1,6 @@
 import './ChessBoard.css';
+import * as blackFolder from './assets/blackPieces';
+import * as whiteFolder from './assets/whitePieces';
 
 const ChessBoard = ({ board, onSquareClick, selectedSquare }) => {
   return (
@@ -21,14 +23,20 @@ const ChessBoard = ({ board, onSquareClick, selectedSquare }) => {
                 width: 60,
                 height: 60,
                 backgroundColor,
-                color: cell === cell.toUpperCase() ? "white" : "black",
-                fontSize: 36,
-                textAlign: "center",
-                lineHeight: "60px",
+                display: flex,
+                justifyContent: "center",
+                alignItems: "center",
                 cursor: "pointer",
+                
               }}
             >
-              {cell !== "." ? cell : ""}
+              {cell !== "." && (
+                <img
+                  src={getPieceImage(cell)}
+                  alt={cell}
+                  style={{ width: "80%", height: "80%" }}
+                />
+              )}
             </div>
             );
           })
