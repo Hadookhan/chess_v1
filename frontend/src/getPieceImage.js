@@ -9,3 +9,5 @@ const getPieceImage = (cell) => {
     ? white[piece] // white piece
     : black[piece]; // black piece
 };
+
+export default getPieceImage;
