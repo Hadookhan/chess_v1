@@ -11,12 +11,14 @@ function App() {
   const [moves, setMoves] = useState(null);
 
   useEffect(() => {
-    const socket = io("wss://chess-v1.onrender.com", {
+    const socket = io("https://chess-v1.onrender.com", {
     transports: ["websocket"],
-    withCredentials: true, // optional but helps with cookies
+    withCredentials: true,
     });
 
-    socket.emit("join", { room: "main" });
+    socket.on("connect", () => {
+      socket.emit("join", { room: "main" });
+    })
 
     socket.on("move", (data) => {
       console.log("Received move:", data);
