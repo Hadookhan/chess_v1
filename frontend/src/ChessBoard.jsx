@@ -1,6 +1,5 @@
 import './ChessBoard.css';
-import * as blackFolder from './assets/blackPieces';
-import * as whiteFolder from './assets/whitePieces';
+import { getPieceImage } from './convertLetterstoPieces';
 
 const ChessBoard = ({ board, onSquareClick, selectedSquare }) => {
   return (
@@ -23,7 +22,7 @@ const ChessBoard = ({ board, onSquareClick, selectedSquare }) => {
                 width: 60,
                 height: 60,
                 backgroundColor,
-                display: flex,
+                display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
                 cursor: "pointer",
