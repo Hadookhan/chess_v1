@@ -3,32 +3,22 @@ body, html {
 }
 
 .page {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;  /* vertically center */
-        align-items: center;      /* horizontally center */
-        min-height: 100vh;        /* full screen */
-        background-color: #222;   /* optional: dark background */
-        color: white;
-        width: 150%;
-        margin-left: 25%;
-        margin-right: 25%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;   /* Vertically center */
+  align-items: center;       /* Horizontally center */
+  min-height: 100vh;
+  background-color: #222;
+  color: white;
+  padding: 1rem;
+  box-sizing: border-box;
 }
 
-@media (max-width:1000px) and (min-width:500px) {
-    .page {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;  /* vertically center */
-        align-items: center;      /* horizontally center */
-        min-height: 100vh;        /* full screen */
-        background-color: #222;   /* optional: dark background */
-        color: white;
-        width: 150%;
-        margin-left: calc(15px + (100vw - 500px) * (15 - 30) / (500 -  1000));
-        margin-right: calc(15px + (100vw - 500px) * (15 - 30) / (500 -  1000));
-    }
-};
+@media only screen and (max-width: 600px) {
+  .page {
+    padding: 1rem;
+  }
+}
 
 /* This just stacks board + controls inside the center */
 .game {
