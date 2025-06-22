@@ -12,7 +12,8 @@ body, html {
   background-color: #222;   /* optional: dark background */
   color: white;
   width: 150%;
-  margin: auto;
+  margin-left: 100px;
+  margin-right: 100px;
 }
 
 /* This just stacks board + controls inside the center */
