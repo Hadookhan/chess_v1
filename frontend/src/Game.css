@@ -22,7 +22,7 @@ body, html {
 
 @media only screen and (min-width: 600px) {
   .page {
-    padding: 1rem;
+    margin: 1rem;
   }
 }
 
